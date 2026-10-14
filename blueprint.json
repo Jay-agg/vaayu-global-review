@@ -1,0 +1,79 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "meta": {
+    "title": "Vaayu Global website (review)",
+    "description": "Design review copy of the Vaayu Global website on Spexo's Consultive template.",
+    "author": "Vaayu Global"
+  },
+  "landingPage": "/",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "steps": [
+    {
+      "step": "importWordPressFiles",
+      "wordPressFilesZip": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Jay-agg/vaayu-global-review/main/vaayu-site.zip"
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "wordpress.org/themes",
+        "slug": "spexo"
+      },
+      "options": {
+        "activate": false
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "elementor"
+      },
+      "options": {
+        "activate": false
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "redux-framework"
+      },
+      "options": {
+        "activate": false
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "sastra-essential-addons-for-elementor"
+      },
+      "options": {
+        "activate": false
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "contact-form-7"
+      },
+      "options": {
+        "activate": false
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\n/**\n * Point the snapshot's content at this Playground session's URL.\n * The snapshot was taken from a local preview at http://127.0.0.1:9401.\n */\nrequire_once '/wordpress/wp-load.php';\n\n$old   = 'http://127.0.0.1:9401';\n$new   = untrailingslashit( site_url() );\n$pairs = array(\n\t$old                        => $new,\n\tstr_replace( '/', '\\/', $old ) => str_replace( '/', '\\/', $new ),\n\trawurlencode( $old )        => rawurlencode( $new ),\n);\n\n$replace = function ( $value ) use ( &$replace, $pairs ) {\n\tif ( is_string( $value ) ) {\n\t\treturn strtr( $value, $pairs );\n\t}\n\tif ( is_array( $value ) ) {\n\t\tforeach ( $value as $k => $v ) {\n\t\t\t$value[ $k ] = $replace( $v );\n\t\t}\n\t}\n\treturn $value;\n};\n\nglobal $wpdb;\n$like = '%' . $wpdb->esc_like( '127.0.0.1:9401' ) . '%';\n\nforeach ( array( 'post_content', 'post_excerpt', 'guid' ) as $col ) {\n\tforeach ( $pairs as $from => $to ) {\n\t\t$wpdb->query( $wpdb->prepare( \"UPDATE {$wpdb->posts} SET {$col} = REPLACE({$col}, %s, %s)\", $from, $to ) );\n\t}\n}\n\n// Serialized and JSON values are decoded, replaced and re-encoded, so lengths stay valid.\n$tables = array(\n\tarray( $wpdb->postmeta, 'meta_id', 'meta_value' ),\n\tarray( $wpdb->termmeta, 'meta_id', 'meta_value' ),\n\tarray( $wpdb->usermeta, 'umeta_id', 'meta_value' ),\n\tarray( $wpdb->options, 'option_id', 'option_value' ),\n);\n$changed = 0;\nforeach ( $tables as $t ) {\n\tlist( $table, $key, $col ) = $t;\n\t$rows = $wpdb->get_results( $wpdb->prepare( \"SELECT {$key} AS k, {$col} AS v FROM {$table} WHERE {$col} LIKE %s OR {$col} LIKE %s\", $like, '%' . $wpdb->esc_like( '127.0.0.1%3A9401' ) . '%' ) );\n\tforeach ( $rows as $row ) {\n\t\t$value = maybe_serialize( $replace( maybe_unserialize( $row->v ) ) );\n\t\tif ( $value !== $row->v ) {\n\t\t\t$wpdb->update( $table, array( $col => $value ), array( $key => $row->k ) );\n\t\t\t$changed++;\n\t\t}\n\t}\n}\n\nwp_cache_flush();\nif ( class_exists( '\\Elementor\\Plugin' ) ) {\n\t\\Elementor\\Plugin::$instance->files_manager->clear_cache();\n}\necho \"Rewrote {$changed} values to {$new}\\n\";\n"
+    }
+  ]
+}
