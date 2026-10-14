@@ -54,6 +54,11 @@ foreach ( $tables as $t ) {
 	}
 }
 
+// Review copy: Playground signs visitors in as admin, so hide the toolbar to show the site as the public sees it.
+foreach ( get_users( array( 'fields' => 'ID' ) ) as $user_id ) {
+	update_user_meta( $user_id, 'show_admin_bar_front', 'false' );
+}
+
 wp_cache_flush();
 if ( class_exists( '\Elementor\Plugin' ) ) {
 	\Elementor\Plugin::$instance->files_manager->clear_cache();

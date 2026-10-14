@@ -4,7 +4,7 @@ A review copy of the Vaayu Global website (Spexo "Consultive" template with the 
 Global colours, copy and imagery), runnable in the browser with WordPress Playground.
 
 **Open the site:**
-https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Jay-agg/vaayu-global-review/main/blueprint.json
+https://playground.wordpress.net/?mode=seamless&blueprint-url=https://raw.githubusercontent.com/Jay-agg/vaayu-global-review/main/blueprint.json
 
 The first load takes a minute: WordPress, the theme, its plugins and this snapshot are
 downloaded into your browser. Each visitor gets a private copy that runs only in their
